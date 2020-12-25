@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import Button from './components/button';
 import Header from './components/header';
+import ReactTouchEvents from "react-touch-events";
 
 function App() {
   const canvas = useRef();
@@ -88,12 +89,17 @@ function App() {
       <center>
       <Header/>
       </center>
-      <canvas
+      <canvas  
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseOut={handleMouseOut}
-        ref={canvas} width="1500" height="900"></canvas>
+        ref={canvas} width="1500" height="900">
+          <ReactTouchEvents
+            onTap={handleMouseDown}
+            onSwipe={handleMouseMove}
+            ></ReactTouchEvents>
+        </canvas>
       <Button/>
     </div>
   </div>

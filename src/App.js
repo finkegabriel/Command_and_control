@@ -23,11 +23,12 @@ function App() {
  
     // get context of the canvas
     ctx = canvasEle.getContext("2d");
-  }, []);
- 
-  useEffect(() => {
     draw();
   }, []);
+ 
+  // useEffect(() => {
+  //   draw();
+  // }, []);
  
   // draw rectangle
   const draw = () => {

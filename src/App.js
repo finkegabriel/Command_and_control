@@ -57,27 +57,25 @@ function App() {
     return isTarget;
   }
  
-  // const handleMouseDown = e => {
-  //   startX = parseInt(e.targetTouches[0].pageX - canvas.current.clientLeft);
-  //   startY = parseInt(e.targetTouches[0].pageY  - canvas.current.clientTop);
-  //   isDown = hitBox(startX, startY);
-  // }
-  const handleMouseMove = e => {
-    // if (!isDown) return;
- 
-    // const mouseX = parseInt(e.targetTouches.pageX - canvas.current.clientLeft);
-    // const mouseY = parseInt(e.targetTouches.pageY - canvas.current.clientTop);
-    // const dx = mouseX - startX;
-    // const dy = mouseY - startY;
-    // startX = mouseX;
-    // startY = mouseY;
-    // dragTarget.x += dx;
-    // dragTarget.y += dy;
-    // draw();
-    var x = e.targetTouches[0].clientX - canvas.current.clientLeft;
-    var y = e.targetTouches[0].clientY - canvas.current.clientTop;
-    console.log(x,y)
+  const handleMouseDown = e => {
+    startX = parseInt(e.nativeEvent.offsetX- canvas.current.clientLeft);
+    startY = parseInt(e.nativeEvent.offsetY  - canvas.current.clientTop);
+    isDown = hitBox(startX, startY);
   }
+  const handleMouseMove = e => {
+    if (!isDown) return;
+ 
+    const mouseX = parseInt(e.nativeEvent.offsetX - canvas.current.clientLeft);
+    const mouseY = parseInt(e.nativeEvent.offsetY - canvas.current.clientTop);
+    const dx = mouseX - startX;
+    const dy = mouseY - startY;
+    startX = mouseX;
+    startY = mouseY;
+    dragTarget.x += dx;
+    dragTarget.y += dy;
+    draw();
+  }
+
   const handleMouseUp = e => {
     dragTarget = null;
     isDown = false;
@@ -93,7 +91,7 @@ function App() {
       <Header/>
       </center>
         <canvas  
-            // onMouseDown={handleMouseDown}
+            onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseOut={handleMouseOut}

@@ -25,11 +25,7 @@ function App() {
     ctx = canvasEle.getContext("2d");
     draw();
   }, []);
- 
-  // useEffect(() => {
-  //   draw();
-  // }, []);
- 
+  
   // draw rectangle
   const draw = () => {
     ctx.clearRect(0, 0, canvas.current.clientWidth, canvas.current.clientHeight);

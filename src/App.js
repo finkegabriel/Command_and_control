@@ -1,105 +1,106 @@
 import React, { useRef, useEffect } from 'react';
+import interact from 'interactjs';
 import Button from './components/button';
 import Header from './components/header';
-import ReactTouchEvents from "react-touch-events";
+import ReactTouchEvents from "react-touch-events";;
+
+const baseStyles = {
+  main: {
+    position: "sticky",
+    height: '75%',
+    width: '100%',
+  },
+  drag1:{
+    width: '25%',
+    minHeight: '6.5em',
+    margin: '1rem 0 0 1rem',
+    backgroundColor: '#29e',
+    color: 'white',
+    borderRadius: '0.75em',
+    padding:'4%',
+    touchAction: 'none',
+    userSelect: 'none',
+    transform: 'translate(0px, 0px)',
+  },
+  drag2:{
+    width: '25%',
+    minHeight: '6.5em',
+    margin: '1rem 0 0 1rem',
+    backgroundColor: '#29e',
+    color: 'white',
+    borderRadius: '0.75em',
+    padding:'4%',
+    touchAction: 'none',
+    userSelect: 'none',
+    transform: 'translate(0px, 0px)',
+  }
+}
 
 function App() {
-  const canvas = useRef();
-  let ctx = null;
-  const boxes = [
-    { x: 200, y: 220, w: 100, h: 50 },
-    { x: 100, y: 120, w: 100, h: 50 }
-  ]
-  let isDown = false;
-  let dragTarget = null;
-  let startX = null;
-  let startY = null;
- 
   // initialize the canvas context
   useEffect(() => {
-    // dynamically assign the width and height to canvas
-    const canvasEle = canvas.current;
-    canvasEle.width = canvasEle.clientWidth;
-    canvasEle.height = canvasEle.clientHeight;
- 
-    // get context of the canvas
-    ctx = canvasEle.getContext("2d");
-    draw();
+
   }, []);
-  
-  // draw rectangle
-  const draw = () => {
-    ctx.clearRect(0, 0, canvas.current.clientWidth, canvas.current.clientHeight);
-    boxes.map(info => drawFillRect(info));
-  }
- 
-  // draw rectangle with background
-  const drawFillRect = (info, style = {}) => {
-    const { x, y, w, h } = info;
-    const { backgroundColor = '#30D5C8' } = style;
- 
-    ctx.beginPath();
-    ctx.fillStyle = backgroundColor;
-    ctx.fillRect(x, y, w, h);
-  }
- 
-  // identify the click event in the rectangle
-  const hitBox = (x, y) => {
-    let isTarget = null;
-    for (let i = 0; i < boxes.length; i++) {
-      const box = boxes[i];
-      if (x >= box.x && x <= box.x + box.w && y >= box.y && y <= box.y + box.h) {
-        dragTarget = box;
-        isTarget = true;
-        break;
+
+
+  interact('.draggable')
+    .draggable({
+      // enable inertial throwing
+      inertia: true,
+      // keep the element within the area of it's parent
+      modifiers: [
+        interact.modifiers.restrictRect({
+          restriction: 'parent',
+          endOnly: true
+        })
+      ],
+      // enable autoScroll
+      autoScroll: true,
+
+      listeners: {
+        // call this function on every dragmove event
+        move: dragMoveListener,
+
+        // call this function on every dragend event
+        end(event) {
+          var textEl = event.target.querySelector('p')
+
+          textEl && (textEl.textContent =
+            'moved a distance of ' +
+            (Math.sqrt(Math.pow(event.pageX - event.x0, 2) +
+              Math.pow(event.pageY - event.y0, 2) | 0))
+              .toFixed(2) + 'px')
+        }
       }
-    }
-    return isTarget;
-  }
- 
-  const handleMouseDown = e => {
-    startX = parseInt(e.nativeEvent.offsetX- canvas.current.clientLeft);
-    startY = parseInt(e.nativeEvent.offsetY  - canvas.current.clientTop);
-    isDown = hitBox(startX, startY);
-  }
-  const handleMouseMove = e => {
-    if (!isDown) return;
- 
-    const mouseX = parseInt(e.nativeEvent.offsetX - canvas.current.clientLeft);
-    const mouseY = parseInt(e.nativeEvent.offsetY - canvas.current.clientTop);
-    const dx = mouseX - startX;
-    const dy = mouseY - startY;
-    startX = mouseX;
-    startY = mouseY;
-    dragTarget.x += dx;
-    dragTarget.y += dy;
-    draw();
+    })
+
+  function dragMoveListener(event) {
+    var target = event.target
+    // keep the dragged position in the data-x/data-y attributes
+    var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
+    var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
+
+    // translate the element
+    target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
+
+    // update the posiion attributes
+    target.setAttribute('data-x', x)
+    target.setAttribute('data-y', y)
   }
 
-  const handleMouseUp = e => {
-    dragTarget = null;
-    isDown = false;
-  }
-  const handleMouseOut = e => {
-    handleMouseUp(e);
-  }
+  // this function is used later in the resizing and gesture demos
+  window.dragMoveListener = dragMoveListener
+
 
   return (
     <div>
-    <div className="App">
-      <center>
-      <Header/>
-      </center>
-        <canvas  
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseOut={handleMouseOut}
-            ref={canvas} width="1500" height="900"> 
-       </canvas>
-      <Button/>
+      <div id="drag-1" style={baseStyles.drag1} class="draggable">
+        <p> You can drag one element </p>
+      </div>
+      <div id="drag-2" style={baseStyles.drag2} class="draggable">
+        <p> with each pointer </p>
+      </div>
     </div>
-  </div>
   );
 }
 

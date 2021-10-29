@@ -1,8 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import interact from 'interactjs';
-import Button from './components/button';
-import Header from './components/header';
-import ReactTouchEvents from "react-touch-events";;
+import { Terminal } from 'xterm';
+const terminal = new Terminal();
 
 const baseStyles = {
   main: {
@@ -10,26 +9,26 @@ const baseStyles = {
     height: '75%',
     width: '100%',
   },
-  drag1:{
-    width: '25%',
+  drag1: {
+    width: 'auto',
     minHeight: '6.5em',
     margin: '1rem 0 0 1rem',
     backgroundColor: '#29e',
     color: 'white',
     borderRadius: '0.75em',
-    padding:'4%',
+    padding: '4%',
     touchAction: 'none',
     userSelect: 'none',
     transform: 'translate(0px, 0px)',
   },
-  drag2:{
-    width: '25%',
+  drag2: {
+    width: 'auto',
     minHeight: '6.5em',
     margin: '1rem 0 0 1rem',
     backgroundColor: '#29e',
     color: 'white',
     borderRadius: '0.75em',
-    padding:'4%',
+    padding: '4%',
     touchAction: 'none',
     userSelect: 'none',
     transform: 'translate(0px, 0px)',
@@ -39,7 +38,8 @@ const baseStyles = {
 function App() {
   // initialize the canvas context
   useEffect(() => {
-
+    terminal.open(document.getElementById('drag-2'));
+    terminal.write('Welcome Master $')
   }, []);
 
 
@@ -87,18 +87,12 @@ function App() {
     target.setAttribute('data-x', x)
     target.setAttribute('data-y', y)
   }
-
-  // this function is used later in the resizing and gesture demos
   window.dragMoveListener = dragMoveListener
-
-
   return (
     <div>
       <div id="drag-1" style={baseStyles.drag1} class="draggable">
-        <p> You can drag one element </p>
       </div>
       <div id="drag-2" style={baseStyles.drag2} class="draggable">
-        <p> with each pointer </p>
       </div>
     </div>
   );
